@@ -3,9 +3,10 @@ ARG cudnn_version=6
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-runtime-ubuntu16.04
 
 ARG python_version=3.5
-ARG CONDA_PYTHON_VERSION=3
-ARG CONDA_DIR=/opt/conda
-ENV PATH $CONDA_DIR/bin:$PATH
+ARG conda_python_version=3
+ARG conda_dir=/opt/conda
+
+ENV PATH $conda_dir/bin:$PATH
 ENV PYTORCH_CUDA=
 
 CMD sh -c 'if ["$cuda_version" = 9.0]; then $PYTORCH_CUDA=cuda90; elif ["$cuda_version" = 9.1]; then $PYTORCH_CUDA=cuda91; else; fi'
@@ -19,9 +20,9 @@ RUN apt-get update && \
 
 #install miniconda
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
-	wget --quiet https://repo.continuum.io/miniconda/Miniconda$CONDA_PYTHON_VERSION-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-	echo 'export PATH=$CONDA_DIR/bin:$PATH' > /etc/profile.d/conda.sh && \
-	/bin/bash /tmp/miniconda.sh -b -p $CONDA_DIR && \
+	wget --quiet https://repo.continuum.io/miniconda/Miniconda$conda_python_version-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
+	echo 'export PATH=$conda_dir/bin:$PATH' > /etc/profile.d/conda.sh && \
+	/bin/bash /tmp/miniconda.sh -b -p $conda_dir && \
 	rm -rf /tmp* && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*

@@ -1,12 +1,12 @@
 ARG cuda_version=8.0
 ARG cudnn_version=6
-#FROM nvidia/cuda:8.0-cudnn6-runtime-ubuntu16.04
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-runtime-ubuntu16.04
 
-ARG PYTHON_VERSION=3.5
-ARG CONDA_PYTHON_VERSION=3
-ARG CONDA_DIR=/opt/conda
-ENV PATH $CONDA_DIR/bin:$PATH
+ARG python_version=3.5
+ARG conda_python_version=3
+ARG conda_dir=/opt/conda
+
+ENV PATH $conda_dir/bin:$PATH
 
 #install prerequisities
 RUN apt-get update && \
@@ -17,9 +17,9 @@ RUN apt-get update && \
 
 #install miniconda
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
-	wget --quiet https://repo.continuum.io/miniconda/Miniconda$CONDA_PYTHON_VERSION-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-	echo 'export PATH=$CONDA_DIR/bin:$PATH' > /etc/profile.d/conda.sh && \
-	/bin/bash /tmp/miniconda.sh -b -p $CONDA_DIR && \
+	wget --quiet https://repo.continuum.io/miniconda/Miniconda$conda_python_version-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
+	echo 'export PATH=$conda_dir/bin:$PATH' > /etc/profile.d/conda.sh && \
+	/bin/bash /tmp/miniconda.sh -b -p $conda_dir && \
 	rm -rf /tmp* && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*

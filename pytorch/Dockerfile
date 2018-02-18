@@ -1,5 +1,5 @@
-ARG cuda_version=8.0
-ARG cudnn_version=6
+ARG cuda_version=9.1
+ARG cudnn_version=7
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-runtime-ubuntu16.04
 
 ARG python_version=3.5
@@ -15,6 +15,7 @@ CMD sh -c 'if ["$cuda_version" = 9.0]; then $PYTORCH_CUDA=cuda90; elif ["$cuda_v
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends git wget ffmpeg unzip bzip2 sudo build-essential && \
 	apt-get install -y libsm6 libxrender1 libfontconfig1 && \
+	apt-get install -y xvfb libav-tools xorg-dev libsdl2-dev swig cmake && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
@@ -31,14 +32,15 @@ RUN conda install -y --quiet python=$python_version && \
 	conda install -y \
 	h5py \
 	pandas \
-	theano \
 	jupyter \
 	matplotlib \
-	seaborn \
 	scikit-learn \
 	scikit-image \
 	pytorch torchvision $PYTORCH_CUDA -c pytorch \
 	&& conda clean --yes --tarballs --packages --source-cache
+
+RUN pip install --upgrade pip && \
+	pip install --upgrade gym[all]
 
 ENV CUDA_HOME=/usr/local/cuda
 ENV CUDA_ROOT=$CUDA_HOME

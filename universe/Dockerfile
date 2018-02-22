@@ -31,7 +31,7 @@ RUN ln -sf /usr/bin/pip3 /usr/local/bin/pip \
     && pip install -U pip
 
 # Install gym
-RUN pip install gym[all]
+RUN pip install gym
 
 # Get the faster VNC driver
 RUN pip install go-vncdriver>=0.4.0
@@ -45,9 +45,11 @@ ENV UNIVERSE_VNCDRIVER='go'
 WORKDIR /usr/local/universe/
 
 # Cachebusting
-COPY ./setup.py ./
-COPY ./tox.ini ./
+COPY ./universe/setup.py ./
+COPY ./universe/tox.ini ./
 
+RUN git clone https://github.com/openai/universe.git
+RUN cd universe
 RUN pip install -e .
 
 # Upload our actual code

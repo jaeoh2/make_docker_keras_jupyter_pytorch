@@ -1,6 +1,7 @@
 ARG cuda_version=9.1
 ARG cudnn_version=7
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-runtime-ubuntu16.04
+#FROM floydhub/dl-base:latest-gpu-py3
 
 ARG python_version=3.5
 ARG conda_python_version=3
@@ -30,6 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
 RUN conda install -y --quiet python=$python_version && \
 	conda install -y \
+	tqdm \
 	h5py \
 	pandas \
 	jupyter \
@@ -39,8 +41,8 @@ RUN conda install -y --quiet python=$python_version && \
 	pytorch torchvision $PYTORCH_CUDA -c pytorch \
 	&& conda clean --yes --tarballs --packages --source-cache
 
-RUN pip install --upgrade pip && \
-	pip install --upgrade gym[all]
+#RUN pip install --upgrade pip && \
+#	pip install --upgrade gym
 
 ENV CUDA_HOME=/usr/local/cuda
 ENV CUDA_ROOT=$CUDA_HOME

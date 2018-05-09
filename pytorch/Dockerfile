@@ -1,6 +1,6 @@
 ARG cuda_version=9.1
 ARG cudnn_version=7
-FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-runtime-ubuntu16.04
+FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel-ubuntu16.04
 #FROM floydhub/dl-base:latest-gpu-py3
 
 ARG python_version=3.5
@@ -16,9 +16,7 @@ CMD sh -c 'if ["$cuda_version" = 9.0]; then $PYTORCH_CUDA=cuda90; elif ["$cuda_v
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends git wget ffmpeg unzip bzip2 sudo build-essential && \
 	apt-get install -y libsm6 libxrender1 libfontconfig1 && \
-	apt-get install -y xvfb libav-tools xorg-dev libsdl2-dev swig cmake && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+	apt-get install -y xvfb libav-tools xorg-dev libsdl2-dev swig cmake
 
 #install miniconda
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \

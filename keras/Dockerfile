@@ -1,8 +1,14 @@
-ARG cuda_version=8.0
-ARG cudnn_version=6
-FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-runtime-ubuntu16.04
+ARG cuda_version=9.0
+ARG cudnn_version=7
+#FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel-ubuntu16.04
+FROM nvidia/cuda:${cuda_version}-runtime-ubuntu16.04
+ENV CUDNN_VERSION 7.0.5.15
 
-ARG python_version=3.5
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends \
+	libcudnn7=$CUDNN_VERSION-1+cuda9.0
+
+ARG python_version=3.6
 ARG conda_python_version=3
 ARG conda_dir=/opt/conda
 
@@ -10,35 +16,39 @@ ENV PATH $conda_dir/bin:$PATH
 
 #install prerequisities
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends git wget ffmpeg unzip bzip2 sudo build-essential && \
-	apt-get install -y libsm6 libxrender1 libfontconfig1 && \
+	apt-get install -y --no-install-recommends \
+	git \
+	wget \
+	ffmpeg \
+	unzip \
+	bzip2 \
+	build-essential \
+	libsm6 \
+	libxrender1 \
+	libfontconfig1 \
+	python3 \
+	python3-dev \
+	python3-pip \
+	&& \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
-#install miniconda
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
-	wget --quiet https://repo.continuum.io/miniconda/Miniconda$conda_python_version-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-	echo 'export PATH=$conda_dir/bin:$PATH' > /etc/profile.d/conda.sh && \
-	/bin/bash /tmp/miniconda.sh -b -p $conda_dir && \
-	rm -rf /tmp* && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
-
-RUN conda install -y --quiet python=$PYTHON_VERSION && \
-	conda install -y \
+RUN pip3 install --upgrade pip setuptools && \
+	pip --no-cache-dir install tensorflow_gpu \
 	h5py \
+	mkl \
+	Pillow \
 	pandas \
-	theano \
 	jupyter \
 	matplotlib \
-	seaborn \
 	scikit-learn \
-	scikit-image \
-	&& conda clean --yes --tarballs --packages --source-cache
-
-RUN pip install --upgrade pip && \
-	pip install --upgrade tensorflow-gpu keras joblib && \
-	pip install --upgrade opencv-python
+	keras \
+	joblib \
+	opencv-python \
+	lxml \
+	html5lib \
+	BeautifulSoup4 \
+	tqdm
 
 ENV CUDA_HOME=/usr/local/cuda
 ENV CUDA_ROOT=$CUDA_HOME

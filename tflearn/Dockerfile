@@ -1,7 +1,7 @@
 ARG cuda_version=9.1 
 ARG cudnn_version=7
 #FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-runtime-ubuntu16.04
-FROM nvidia/cuda:${cuda_version}-runtime-ubuntu16.04
+FROM nvidia/cuda:${cuda_version}-devel-ubuntu16.04
 
 ENV CUDNN_VERSION=7.0.4.31
 

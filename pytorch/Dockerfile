@@ -1,46 +1,45 @@
-ARG cuda_version=9.1
+ARG cuda_version=10.0
 ARG cudnn_version=7
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel-ubuntu16.04
-#FROM floydhub/dl-base:latest-gpu-py3
 
-ARG python_version=3.5
-ARG conda_python_version=3
-ARG conda_dir=/opt/conda
-
-ENV PATH $conda_dir/bin:$PATH
-ENV PYTORCH_CUDA=
-
-CMD sh -c 'if ["$cuda_version" = 9.0]; then $PYTORCH_CUDA=cuda90; elif ["$cuda_version" = 9.1]; then $PYTORCH_CUDA=cuda91; else; fi'
+#ARG python_version=3.6
 
 #install prerequisities
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends git wget ffmpeg unzip bzip2 sudo build-essential && \
-	apt-get install -y libsm6 libxrender1 libfontconfig1 && \
-	apt-get install -y xvfb libav-tools xorg-dev libsdl2-dev swig cmake
-
-#install miniconda
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
-	wget --quiet https://repo.continuum.io/miniconda/Miniconda$conda_python_version-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-	echo 'export PATH=$conda_dir/bin:$PATH' > /etc/profile.d/conda.sh && \
-	/bin/bash /tmp/miniconda.sh -b -p $conda_dir && \
-	rm -rf /tmp* && \
-	apt-get clean && \
+	apt-get install -y --no-install-recommends software-properties-common \
+	build-essential \
+	python3 \
+	python3-dev \
+	python3-pip \
+	cmake \
+	git \
+	curl \
+	wget \
+	ca-certificates \
+	libjpeg-dev \
+	libpng-dev \
+	libpcl-dev && \
 	rm -rf /var/lib/apt/lists/*
-
-RUN conda install -y --quiet python=$python_version && \
-	conda install -y \
-	tqdm \
-	h5py \
-	pandas \
-	jupyter \
-	matplotlib \
+	
+RUN pip3 install --upgrade pip setuptools && \
+        pip --no-cache-dir install https://download.pytorch.org/whl/cu100/torch-1.1.0-cp35-cp35m-linux_x86_64.whl \
+	https://download.pytorch.org/whl/cu100/torchvision-0.3.0-cp35-cp35m-linux_x86_64.whl \
+        h5py \
+        mkl \
+        Pillow \
+        pandas \
+        jupyter \
+        matplotlib \
+        scikit-learn \
+        keras \
+        joblib \
+        opencv-python \
+        lxml \
+        html5lib \
+        BeautifulSoup4 \
 	scikit-learn \
 	scikit-image \
-	pytorch torchvision $PYTORCH_CUDA -c pytorch \
-	&& conda clean --yes --tarballs --packages --source-cache
-
-#RUN pip install --upgrade pip && \
-#	pip install --upgrade gym
+        tqdm
 
 ENV CUDA_HOME=/usr/local/cuda
 ENV CUDA_ROOT=$CUDA_HOME

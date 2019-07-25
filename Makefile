@@ -1,15 +1,15 @@
 help:
 	@cat Makefile
 
-DATA?=${HOME}/Data
+DATA?=${HOME}/Dataset
 SRC?=${HOME}/Work
 
 GPU?=0
 DOCKER_FILE=Dockerfile
 DOCKER=NV_GPU=$(GPU) nvidia-docker
 BACKEND=tensorflow
-PYTHON_VERSION?=3.5
-CUDA_VERSION?=9.1
+PYTHON_VERSION?=3.6
+CUDA_VERSION?=10.0
 CUDNN_VERSION?=7
 
 
@@ -33,7 +33,7 @@ keras: buildkeras
 	$(DOCKER) run -d -p 60088:8888 -v $(SRC):/workspace -v $(DATA):/data -w /workspace keras-jupyter
 
 pytorch: buildpytorch
-	$(DOCKER) run -d -p 8888:8888 -v $(SRC):/workspace -v $(DATA):/data -w /workspace pytorch-jupyter
+	$(DOCKER) run -d --name pytorch-jupyter -p 8888:8888 -v $(SRC):/workspace -v $(DATA):/data -w /workspace pytorch-jupyter
 
 universe: builduniverse
 	$(DOCKER) run --privileged --rm -e DOCKER_NET_HOST=172.17.0.1 -v /var/run/docker.sock:/var/run/docker.sock universe pytest
